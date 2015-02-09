@@ -46,11 +46,11 @@ SEC_GROUP = core_model.Mixin(
     'group', attributes=None)
 
 # OS change adminstrative password action
-_OS_CHG_PWD_ATTRIBUTES = {'org.openstack.credentials.admin_pwd': '', }
+_OS_ADM_PWD_ATTRIBUTES = {'org.openstack.credentials.admin_pwd': '', }
 OS_CHG_PWD = core_model.Action(
     'http://schemas.openstack.org/instance/action#',
     'chg_pwd', 'Changes Admin password.',
-    _OS_CHG_PWD_ATTRIBUTES)
+    _OS_ADM_PWD_ATTRIBUTES)
 
 # OS create image from VM action
 _OS_CREATE_IMAGE_ATTRIBUTES = {'org.openstack.snapshot.image_name': '', }
@@ -85,3 +85,7 @@ _OS_USER_DATA_ATTRIBUTES = {'org.openstack.compute.user_data': ''}
 OS_USER_DATA_EXT = core_model.Mixin(
     'http://schemas.openstack.org/compute/instance#',
     'user_data', attributes=_OS_USER_DATA_ATTRIBUTES)
+
+OS_ADMIN_PASSWD_EXT = core_model.Mixin(
+    'http://schemas.openstack.org/compute/instance#',
+    'admin_pwd', attributes=_OS_ADM_PWD_ATTRIBUTES)
