@@ -85,7 +85,7 @@ def create_vm(entity, context):
         elif mixin == os_addon.OS_USER_DATA_EXT:
             attr = 'org.openstack.compute.user_data'
             user_data = entity.attributes[attr]
-        elif mixin == os_addin.OS_ADM_PASSWD_EXT:
+        elif mixin == os_addon.OS_ADMIN_PASSWD_EXT:
             attr = 'org.openstack.credentials.admin_pwd'
             password = entity.attributes[attr]
         # Look for security group. If the group is non-existant, the
