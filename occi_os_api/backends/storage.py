@@ -45,10 +45,15 @@ class StorageBackend(backend.KindBackend, backend.ActionBackend):
         context = extras['nova_ctx']
         if 'occi.storage.size' not in entity.attributes:
             raise AttributeError('size attribute not found!')
+        size = entity.attributes['occi.storage.size']
 
-        new_volume = storage.create_storage(entity.attributes['occi.storage'
-                                                              '.size'],
-                                            context)
+        name = ''
+        if 'occi.core.title' not in entity.attributes:
+            name = str(uuid.uuid4())
+        else:
+            name = entity.attributes['occi.core.title']
+
+        new_volume = storage.create_storage(size, name, context)
         vol_id = new_volume['id']
 
         # Work around problem that instance is lazy-loaded...
@@ -75,6 +80,7 @@ class StorageBackend(backend.KindBackend, backend.ActionBackend):
 
         volume = storage.get_storage(v_id, extras['nova_ctx'])
 
+        entity.attributes['occi.core.title'] = str(volume['display_name'])
         entity.attributes['occi.storage.size'] = str(float(volume['size']))
 
         # OS volume states:
@@ -145,18 +151,26 @@ class StorageLinkBackend(backend.KindBackend):
         Creates a link from a compute instance to a storage volume.
         The user must specify what the device id is to be.
         """
-        context = extras['nova_ctx']
-        instance_id = link.source.attributes['occi.core.id']
-        volume_id = link.target.attributes['occi.core.id']
-        mount_point = link.attributes['occi.storagelink.deviceid']
-
-        vm.attach_volume(instance_id, volume_id, mount_point, context)
-
-        link.attributes['occi.core.id'] = str(uuid.uuid4())
-        link.attributes['occi.storagelink.deviceid'] = \
-            link.attributes['occi.storagelink.deviceid']
-        link.attributes['occi.storagelink.mountpoint'] = ''
+        volume_id = link.target.attributes.get('occi.core.id', '')
+        instance_id = link.source.attributes.get('occi.core.id', '')
+        link_id = '_'.join([instance_id, volume_id])
+        link.identifier = infrastructure.STORAGELINK.location + link_id
+        link.attributes['occi.core.id'] = link_id
         link.attributes['occi.storagelink.state'] = 'active'
+
+        registry = extras['registry']
+        try:
+            registry.get_resource('/compute/%s' % instance_id, extras)
+        except KeyError:
+            # image is not in the registry -> link created with the VM
+            # will be handled elsewhere
+            pass
+        else:
+            context = extras['nova_ctx']
+            device_id = link.attributes.get('occi.storagelink.deviceid')
+            device_name = vm.attach_volume(instance_id, volume_id,
+                                           device_id, context)
+            link.attributes['occi.storagelink.deviceid'] = device_name
 
     def delete(self, link, extras):
         """
