@@ -83,6 +83,7 @@ def delete_storage_instance(uid, context):
     try:
         VOLUME_API.delete(context, uid)
     except Exception as e:
+        raise e
         raise AttributeError(e.message)
 
 
