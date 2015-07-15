@@ -337,8 +337,8 @@ def detach_volume(volume_id, context):
         instance_id = volume['instance_uuid']
         instance = get_vm(instance_id, context)
         LOG.warn("detach volume should be called now!")
-        LOG.warn("NOT DOING IT!")
-        # COMPUTE_API.detach_volume(context, instance, volume)
+        LOG.warn("Using the proper call!")
+        COMPUTE_API.detach_volume(context, volume_id)
     except Exception as e:
         raise AttributeError(e.message)
 
