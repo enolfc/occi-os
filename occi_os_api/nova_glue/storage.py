@@ -70,6 +70,7 @@ def create_storage(size, context, name=None, description=None):
                                  disp_name,
                                  disp_descr)
     except Exception as e:
+        print "EXCEPTION HERE!", e
         raise AttributeError(e.message)
 
 
