@@ -101,13 +101,15 @@ def create_vm(entity, context):
         inst_type = None
 
     # Create block device mapping
-    for link in entity.links:
+    # ugly hack to get some device names if not specified by the user
+    device_letters = 'bcdefghijk'
+    for i, link in enumerate(entity.links):
         try:
             if not 'occi.storagelink.state' in link.attributes:
                 continue
             mapping = {
                 'volume_id': link.target.attributes['occi.core.id'],
-                'device_name': None,
+                'device_name': '/dev/vd%s' % device_letters[i],
                 'delete_on_termination': False,
             }
             device_id = link.attributes.get('occi.storagelink.deviceid')
