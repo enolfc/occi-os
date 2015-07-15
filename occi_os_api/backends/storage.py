@@ -118,11 +118,8 @@ class StorageBackend(backend.KindBackend, backend.ActionBackend):
         """
         Deletes the storage resource
         """
-        print "*" * 80
         context = extras['nova_ctx']
         volume_id = entity.attributes['occi.core.id']
-        print context
-        print volume_id
 
         storage.delete_storage_instance(volume_id, context)
 
