@@ -81,9 +81,9 @@ def delete_storage_instance(uid, context):
     context -- The os context.
     """
     try:
-        VOLUME_API.delete(context, uid)
+        instance = get_storage(uid, context)
+        VOLUME_API.delete(context, instance)
     except Exception as e:
-        raise e
         raise AttributeError(e.message)
 
 
