@@ -103,17 +103,20 @@ def create_vm(entity, context):
     # Create block device mapping
     LOG.error("I AM TRYING TO DEBUG THIS OUT")
     for link in entity.links:
-        LOG.debug("Creating with entity links")
-        if not 'occi.storagelink.state' in link.attributes:
-            continue
-        mapping = {
-            'volume_id': link.target.attributes['occi.core.id'],
-            'delete_on_termination': '0',
-        }
-        device_id = link.attributes.get('occi.storagelink.deviceid')
-        if device_id:
-            mapping['device_name'] = device_id
-        block_device_mapping.append(mapping)
+        try:
+            LOG.debug("Creating with entity links")
+            if not 'occi.storagelink.state' in link.attributes:
+                continue
+            mapping = {
+                'volume_id': link.target.attributes['occi.core.id'],
+                'delete_on_termination': '0',
+            }
+            device_id = link.attributes.get('occi.storagelink.deviceid')
+            if device_id:
+                mapping['device_name'] = device_id
+            block_device_mapping.append(mapping)
+        except Exception, e:
+            raise AttributeError(e.message)
 
     # make the call
     try:
@@ -143,6 +146,7 @@ def create_vm(entity, context):
             auto_disk_config=auto_disk_config,
             scheduler_hints=scheduler_hints)
     except Exception as e:
+        raise e
         raise AttributeError(e.message)
 
     # return first instance
