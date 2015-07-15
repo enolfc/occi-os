@@ -101,7 +101,9 @@ def create_vm(entity, context):
         inst_type = None
 
     # Create block device mapping
+    LOG.error("I AM TRYING TO DEBUG THIS OUT")
     for link in entity.links:
+        LOG.debug("Creating with entity links")
         if not 'occi.storagelink.state' in link.attributes:
             continue
         mapping = {
@@ -336,8 +338,6 @@ def detach_volume(volume_id, context):
         volume = COMPUTE_API.volume_api.get(context, volume_id)
         instance_id = volume['instance_uuid']
         instance = get_vm(instance_id, context)
-        LOG.warn("detach volume should be called now!")
-        LOG.warn("Using the proper call!")
         COMPUTE_API.detach_volume(context, volume_id)
     except Exception as e:
         raise AttributeError(e.message)
