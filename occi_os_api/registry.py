@@ -75,10 +75,14 @@ class OCCIRegistry(occi_registry.NonePersistentRegistry):
         """
         Get data which is encapsulated in the extras.
         """
-        sec_extras = None
+        LOG.debug("Getting extras!!")
+        sec_extras = {}
         if extras is not None:
-            sec_extras = {'user_id': extras['nova_ctx'].user_id,
-                          'project_id': extras['nova_ctx'].project_id}
+            try:
+                sec_extras = {'user_id': extras['nova_ctx'].user_id,
+                              'project_id': extras['nova_ctx'].project_id}
+            except:
+                LOG.error("SOMETHING IS BROKEN HERE!")
         return sec_extras
 
     def delete_resource(self, key, extras):
