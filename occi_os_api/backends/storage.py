@@ -25,6 +25,8 @@ from datetime import date
 
 import uuid
 
+from nova.openstack.common import log
+
 from occi import backend
 from occi import exceptions
 from occi.extensions import infrastructure
@@ -32,6 +34,7 @@ from occi.extensions import infrastructure
 from occi_os_api.nova_glue import storage
 from occi_os_api.nova_glue import vm
 
+LOG = log.getLogger(__name__)
 
 class StorageBackend(backend.KindBackend, backend.ActionBackend):
     """
@@ -42,22 +45,28 @@ class StorageBackend(backend.KindBackend, backend.ActionBackend):
         """
         Creates a new volume.
         """
+        LOG.debug("Creating a new storage volume")
         context = extras['nova_ctx']
         if 'occi.storage.size' not in entity.attributes:
             raise AttributeError('size attribute not found!')
         size = entity.attributes['occi.storage.size']
+        LOG.debug("with size: %s" % size)
 
         name = ''
         if 'occi.core.title' not in entity.attributes:
             name = str(uuid.uuid4())
         else:
             name = entity.attributes['occi.core.title']
+        LOG.debug("with name: %s" % name)
+
 
         new_volume = storage.create_storage(size, name, context)
         vol_id = new_volume['id']
+        LOG.debug("volume id: %s" % vol_id)
 
         # Work around problem that instance is lazy-loaded...
         new_volume = storage.get_storage(vol_id, context)
+        LOG.debug("reload volume: %s" % new_volume)
 
         if new_volume['status'] == 'error':
             raise exceptions.HTTPError(500, 'There was an error creating the '
