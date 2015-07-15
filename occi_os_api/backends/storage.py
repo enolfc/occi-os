@@ -60,7 +60,7 @@ class StorageBackend(backend.KindBackend, backend.ActionBackend):
         LOG.debug("with name: %s" % name)
 
 
-        new_volume = storage.create_storage(size, name, context)
+        new_volume = storage.create_storage(size, context, name)
         vol_id = new_volume['id']
         LOG.debug("volume id: %s" % vol_id)
 

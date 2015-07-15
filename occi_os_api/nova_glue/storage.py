@@ -70,7 +70,6 @@ def create_storage(size, context, name=None, description=None):
                                  disp_name,
                                  disp_descr)
     except Exception as e:
-        print "EXCEPTION HERE!", e
         raise AttributeError(e.message)
 
 
@@ -82,8 +81,12 @@ def delete_storage_instance(uid, context):
     context -- The os context.
     """
     try:
+        print "CALLING VOLUME_API delete"
+        print "with: %s" % context
+        print "and: %s" % uid
         VOLUME_API.delete(context, uid)
     except Exception as e:
+        print "Exception here also"
         raise AttributeError(e.message)
 
 
